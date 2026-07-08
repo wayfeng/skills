@@ -75,7 +75,7 @@ Only then ingest/query/lint. This prevents duplicate pages and missed links.
 ## Conventions
 - File names: lowercase, hyphens (e.g. `transformer-architecture.md`)
 - Every page starts with the frontmatter below
-- Link pages with `[[wikilinks]]` — at least 2 outbound per page
+- Link pages with `[[wikilinks]]` wherever a real relationship exists (don't pad to hit a count)
 - Bump `updated` when editing a page
 - Add every new page to `index.md`; append every action to `log.md`
 
@@ -96,7 +96,7 @@ sources: [raw/source-name.md]
 - Create a page when something appears in 2+ sources OR is central to one
 - Add to an existing page when a source mentions something already covered
 - Don't create pages for passing mentions
-- Split pages over ~200 lines
+- Split pages over ~200 lines (the one size threshold; referenced by Lint and Pitfalls)
 
 ## Update Policy
 When new info conflicts with a page: check dates (newer usually wins); if
@@ -132,8 +132,8 @@ for user review.
 2. **Discuss takeaways** with the user (skip in automated contexts).
 3. **Check what exists** — search `index.md` and `raw/` neighbors for mentioned
    entities/concepts before creating anything.
-4. **Write/update pages** per the SCHEMA thresholds. Cross-link (2+ `[[wikilinks]]`).
-   Only use tags from the taxonomy. On conflicts, follow the Update Policy.
+4. **Write/update pages** per the SCHEMA thresholds. Cross-link where relationships
+   are real. Only use tags from the taxonomy. On conflicts, follow the Update Policy.
 5. **Update navigation** — add pages to `index.md`, append to `log.md`.
 6. **Report** every file created or updated.
 
@@ -154,17 +154,12 @@ Report issues with file paths, grouped by severity:
 2. **Orphans** — pages with no inbound links.
 3. **Index completeness** — every page appears in `index.md`.
 4. **Frontmatter** — required fields present; tags in the taxonomy.
-5. **Oversized pages** — over 200 lines, candidates for splitting.
+5. **Oversized pages** — over the SCHEMA size threshold, candidates for splitting.
 6. **Contradictions** — pages on the same topic stating conflicting facts; surface both for review.
 7. **Stale claims** — pages a newer source has superseded but that weren't updated.
 8. Append `## [YYYY-MM-DD] lint | N issues found` to `log.md`.
 
-## Pitfalls
+## Two things that break the wiki
 
 - **Never modify `raw/`** — sources are immutable; corrections go in wiki pages.
-- **Always orient first** — skipping this causes duplicates and missed links.
-- **Always update `index.md` and `log.md`** — they're the navigational backbone.
-- **Cross-reference everything** — isolated pages are invisible.
-- **Tags from the taxonomy only** — add new ones to SCHEMA.md first.
-- **Keep pages scannable** — split over 200 lines.
-- **Handle contradictions explicitly** — note both claims with dates; don't silently overwrite.
+- **Never skip orienting** — reading `SCHEMA.md`/`index.md`/`log.md` first is what prevents duplicate pages and missed links.
