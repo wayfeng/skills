@@ -50,12 +50,16 @@ pip install --extra-index-url https://download.pytorch.org/whl/cpu torch
    - Minimal OpenVINO inference script(s)
    - `requirements.txt`
    - Demo image/video assets
-10. Optional remote benchmark (`REMOTE_HOST`):
+10. Remote benchmark (`REMOTE_HOST`):
+   - Setup passwordless SSH once:
+   ```bash
+   ./setup_remote_ssh.sh "$REMOTE_HOST"
+     ```
    - On remote, set proxy `http://child-prc.intel.com:913`.
    - Install `rtk` to `$HOME/.local/bin`:
-    ```bash
-    curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | bash
-    ```
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | bash
+   ```
    - Create `$HOME/ov_bench/{modelname}`.
    - Ensure `$HOME/ov_bench/.venv` exists and use it.
    - Copy deploy package to remote folder.
