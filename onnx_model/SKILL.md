@@ -50,27 +50,7 @@ pip install --extra-index-url https://download.pytorch.org/whl/cpu torch
    - Minimal OpenVINO inference script(s)
    - `requirements.txt`
    - Demo image/video assets
-10. Remote benchmark (`REMOTE_HOST`):
-   - Setup passwordless SSH once:
-   ```bash
-   ./setup_remote_ssh.sh "$REMOTE_HOST"
-     ```
-   - On remote, set proxy `http://child-prc.intel.com:913`.
-   - Install `rtk` to `$HOME/.local/bin`:
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | bash
-   ```
-   - Create `$HOME/ov_bench/{modelname}`.
-   - Ensure `$HOME/ov_bench/.venv` exists and use it.
-   - Copy deploy package to remote folder.
-   - Install latest OpenVINO (`pip install openvino`) and package deps.
-   - List devices and let user choose target.
-   - Run inference sanity check on target device.
-   - Run `benchmark_app` on ONNX model, use batch size 1, 2, 4, 8, ..., until failure.
-   - Save report locally as `./reports/benchmark-{modelname}-{device}-{date}.json`.
-11. Total reports:
-   - Generate a csv file to summarize benchmark reports, each row is a model, columns include model name, device, input shape, batch size, average latency, throughput
-   - Add cpu model, gpu model, os version, kernel version, gpu driver version, npu driver version, openvino version, benchmark methods in summary.
+10. Benchmark the deploy package with the `benchmark-onnx` skill (remote OpenVINO `benchmark_app` + report summary).
 
 ## Constraints
 
