@@ -25,7 +25,7 @@ description: Use this skill to benchmark an ONNX model on a remote device with O
    ```
 4. Create `$HOME/ov_bench/{modelname}`.
 5. Ensure `$HOME/ov_bench/.venv` exists and use it.
-6. Copy deploy package and `gpu_monitor.py` to remote folder.
+6. Copy deploy package, `gpu_monitor.py`, and `npu_monitor.py` to remote folder.
 7. Install latest OpenVINO (`pip install openvino`) and package deps.
 8. List devices and let user choose target.
 9. Run inference sanity check on target device.
@@ -42,8 +42,15 @@ description: Use this skill to benchmark an ONNX model on a remote device with O
           -report_type no_counters -json_stats true \
           -report_folder ./reports/{modelname}-{device}-{date}-{time}.json
     ```
+    When `{device}` is NPU, wrap it with `npu_monitor.py` instead to capture NPU device utilization (from accel `runtime_active_time`) plus the benchmark process's CPU/mem:
+    ```bash
+    python npu_monitor.py --summary --log-path ./reports/{modelname}-{device}-{date}-{time}.npu.jsonl -- \
+      benchmark_app -m {modelname}.onnx -d {device} -hint throughput -t 15 \
+          -report_type no_counters -json_stats true \
+          -report_folder ./reports/{modelname}-{device}-{date}-{time}.json
+    ```
 
 ## Summarize reports
 
-- Generate a csv summarizing benchmark reports, each row a model, columns: model name, device, input shape, batch size, average latency, throughput, plus peak GPU engine util % (from the `.gpu.jsonl` max-util summary).
+- Generate a csv summarizing benchmark reports, each row a model, columns: model name, device, input shape, batch size, average latency, throughput, plus peak device util % (peak GPU engine util from `.gpu.jsonl` for GPU runs, peak NPU util from `.npu.jsonl` for NPU runs).
 - Add cpu model, gpu model, os version, kernel version, gpu driver version, npu driver version, openvino version, benchmark methods in the summary.
