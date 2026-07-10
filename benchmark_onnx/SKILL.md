@@ -19,15 +19,11 @@ description: Use this skill to benchmark an ONNX model on a remote device with O
    ./setup_remote_ssh.sh "$REMOTE_HOST"
    ```
 2. On remote, set proxy `http://child-prc.intel.com:913`.
-3. Install `rtk` to `$HOME/.local/bin`:
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | bash
-   ```
-4. Create `$HOME/ov_bench/{modelname}`.
-5. Ensure `$HOME/ov_bench/.venv` exists and use it.
-6. Copy deploy package, `gpu_monitor.py`, and `npu_monitor.py` to remote folder.
-7. Install latest OpenVINO (`pip install openvino`) and package deps.
-8. List devices and let user choose target.
+3. Create `$HOME/ov_bench/{modelname}`.
+4. Ensure `$HOME/ov_bench/.venv` exists and use it.
+5. Copy deploy package, `gpu_monitor.py`, and `npu_monitor.py` to remote folder.
+6. Install latest OpenVINO (`pip install openvino`) and package deps.
+7. List devices available on remote host.
 9. Run inference sanity check on target device.
 10. Run `benchmark_app` on the ONNX model:
     ```bash
@@ -52,5 +48,5 @@ description: Use this skill to benchmark an ONNX model on a remote device with O
 
 ## Summarize reports
 
-- Generate a csv summarizing benchmark reports, each row a model, columns: model name, device, input shape, batch size, average latency, throughput, plus peak device util % (peak GPU engine util from `.gpu.jsonl` for GPU runs, peak NPU util from `.npu.jsonl` for NPU runs).
+- Generate a csv summarizing benchmark reports, each row a model, columns: model name, device, input shape, batch size, average latency, throughput, plus peak CPU, RSS, and xPU util % (peak GPU engine util from `.gpu.jsonl` for GPU runs, peak NPU util from `.npu.jsonl` for NPU runs).
 - Add cpu model, gpu model, os version, kernel version, gpu driver version, npu driver version, openvino version, benchmark methods in the summary.

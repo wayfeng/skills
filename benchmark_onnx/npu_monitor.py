@@ -262,22 +262,45 @@ def print_summary(sample: dict):
 
 
 def update_max_utilization(summary: dict, sample: dict):
+    devices = summary.setdefault("devices", {})
+    procs = summary.setdefault("procs", {})
     for dev in sample.get("devices", []):
         util = dev.get("npu_util_pct")
-        if util is None:
-            continue
-        prev = summary.get(dev["name"])
-        if prev is None or util > prev:
-            summary[dev["name"]] = util
+        if util is not None and util > devices.get(dev["name"], -1.0):
+            devices[dev["name"]] = util
+
+        for p in dev.get("processes", []):
+            key = (p.get("pid"), p.get("process_name", ""))
+            peak = procs.setdefault(key, {"cpu_pct": None, "rss_kb": None})
+            cpu = p.get("cpu_usage_pct")
+            if cpu is not None and (peak["cpu_pct"] is None or cpu > peak["cpu_pct"]):
+                peak["cpu_pct"] = cpu
+            rss = p.get("memory_rss_kb")
+            if rss is not None and (peak["rss_kb"] is None or rss > peak["rss_kb"]):
+                peak["rss_kb"] = rss
 
 
 def print_final_max_utilization_summary(summary: dict):
+    devices = summary.get("devices", {})
+    procs = summary.get("procs", {})
+
     print("\nFinal max NPU utilization per device:")
-    if not summary:
+    if not devices:
         print("  No NPU utilization samples collected.")
+    else:
+        for name, pct in sorted(devices.items()):
+            print(f"  {name}: {pct:.1f}%")
+
+    print("\nFinal max CPU/mem per process:")
+    if not procs:
+        print("  No process samples collected.")
         return
-    for name, pct in sorted(summary.items()):
-        print(f"  {name}: {pct:.1f}%")
+    for (pid, name), peak in sorted(procs.items(), key=lambda x: (x[0][1], x[0][0])):
+        cpu = peak["cpu_pct"]
+        cpu_str = f"{cpu:.1f}%" if cpu is not None else "n/a"
+        rss_kb = peak["rss_kb"]
+        rss_str = f"{rss_kb} ({rss_kb / 1024.0:.1f} MiB)" if rss_kb is not None else "n/a"
+        print(f"  pid={pid} name={name}: cpu={cpu_str} rss={rss_str}")
 
 
 def parse_args() -> argparse.Namespace:
