@@ -1,25 +1,12 @@
 ---
 name: llm-wiki
-description: "Karpathy's LLM Wiki: build/query interlinked markdown knowledge base."
+description: "Wiki: create a markdown knowledge base, ingest a source, answer from an existing wiki, or audit wiki integrity."
 ---
 
-# Karpathy's LLM Wiki
+# Wiki
 
-Build and maintain a persistent knowledge base as interlinked markdown files.
-Based on [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
-
-Unlike RAG (which rediscovers knowledge per query), the wiki compiles knowledge
-once and keeps it current. Cross-references and synthesis are already there.
-
-**Division of labor:** The human curates sources and directs analysis. The agent
-summarizes, cross-references, files, and keeps things consistent.
-
-## When This Activates
-
-- User asks to create/build a wiki or knowledge base
-- User asks to ingest a source into their wiki
-- User asks a question and a wiki exists at the configured path
-- User asks to lint/audit their wiki
+Build and maintain an interlinked markdown knowledge base. Preserve source text;
+the user supplies sources and directs analysis.
 
 ## Location
 
@@ -28,11 +15,6 @@ Set via `WIKI_PATH` env var; defaults to `~/wiki`.
 ```bash
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
-
-It's just a directory of markdown — open it in Obsidian, VS Code, or any editor.
-No database, no special tooling. The directory works as an Obsidian vault out of
-the box: `[[wikilinks]]` render as links, frontmatter powers Dataview, Graph View
-visualizes the network.
 
 ## Structure
 
@@ -48,13 +30,14 @@ wiki/
 └── queries/       # Layer 2: filed query results worth keeping
 ```
 
-## Orient Before Acting (every session on an existing wiki)
+## Orient (existing wiki)
 
 1. Read `SCHEMA.md` — domain, conventions, tags.
 2. Read `index.md` — what pages exist.
 3. Skim recent `log.md` — recent activity.
 
-Only then ingest/query/lint. This prevents duplicate pages and missed links.
+Proceed only after all three files are read. If the directory or its root files
+do not exist, initialize it instead.
 
 ## Initialize a New Wiki
 
@@ -62,7 +45,8 @@ Only then ingest/query/lint. This prevents duplicate pages and missed links.
 2. Create the directory structure above.
 3. Ask what domain the wiki covers.
 4. Write `SCHEMA.md` (template below), `index.md`, and `log.md`.
-5. Suggest first sources to ingest.
+5. Confirm the directories and root files exist, the domain and tag taxonomy are
+   recorded, and `log.md` records initialization. Then suggest first sources.
 
 ### SCHEMA.md Template
 
@@ -95,7 +79,6 @@ sources: [raw/source-name.md]
 ## Page Thresholds
 - Create a page when something appears in 2+ sources OR is central to one
 - Add to an existing page when a source mentions something already covered
-- Don't create pages for passing mentions
 - Split pages over ~200 lines (the one size threshold; referenced by Lint and Pitfalls)
 
 ## Update Policy
@@ -128,23 +111,25 @@ for user review.
 ### Ingest
 
 1. **Capture the source** into `raw/`: URL/PDF → extract to markdown; pasted text
-   → save directly. Name it descriptively (`raw/karpathy-llm-wiki.md`).
+    → save directly. Name it descriptively (`raw/karpathy-llm-wiki.md`).
 2. **Discuss takeaways** with the user (skip in automated contexts).
 3. **Check what exists** — search `index.md` and `raw/` neighbors for mentioned
    entities/concepts before creating anything.
 4. **Write/update pages** per the SCHEMA thresholds. Cross-link where relationships
    are real. Only use tags from the taxonomy. On conflicts, follow the Update Policy.
 5. **Update navigation** — add pages to `index.md`, append to `log.md`.
-6. **Report** every file created or updated.
-
-A single source can touch 5-15 pages. That's the compounding effect.
+6. **Report** every created or updated file after the source, affected pages,
+   `index.md`, and `log.md` are all saved.
 
 ### Query
 
-1. Read `index.md` to find relevant pages (search the tree for large wikis).
-2. Read the pages, synthesize a cited answer ("Based on [[page-a]]...").
-3. File substantial answers (comparisons, deep dives) into `queries/`. Skip trivial lookups.
-4. Log the query.
+1. Find relevant pages from `index.md` (search the tree for large wikis).
+2. Read them and synthesize an answer citing the pages (for example,
+   "Based on [[page-a]]...").
+3. Save reusable comparisons or deep dives in `queries/`; answer direct lookups
+   without a query page.
+4. Append the query to `log.md`; the cited answer is complete when every material
+   claim is supported by a read page.
 
 ### Lint
 
@@ -157,9 +142,11 @@ Report issues with file paths, grouped by severity:
 5. **Oversized pages** — over the SCHEMA size threshold, candidates for splitting.
 6. **Contradictions** — pages on the same topic stating conflicting facts; surface both for review.
 7. **Stale claims** — pages a newer source has superseded but that weren't updated.
-8. Append `## [YYYY-MM-DD] lint | N issues found` to `log.md`.
+8. Append `## [YYYY-MM-DD] lint | N issues found` to `log.md`. The lint is
+   complete when every listed check has a result, including zero-issue checks.
 
-## Two things that break the wiki
+## Invariants
 
-- **Never modify `raw/`** — sources are immutable; corrections go in wiki pages.
-- **Never skip orienting** — reading `SCHEMA.md`/`index.md`/`log.md` first is what prevents duplicate pages and missed links.
+- Treat `raw/` as immutable, unless user want to append notes of books.
+- **Orient before work.** Read `SCHEMA.md`, `index.md`, and recent `log.md` before
+  ingesting, querying, or linting.
