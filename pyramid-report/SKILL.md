@@ -1,6 +1,6 @@
 ---
 name: pyramid-report
-description: Structure any answer, report, or written response using the Pyramid Principle — conclusion first, MECE grouping, vertically provable. Use when the user asks to report, summarize, explain, recommend, or write up findings, or says "pyramid", "conclusion first", "SCQA", "MECE", "pyramid report".
+description: Structure reports, recommendations, findings, and status updates with the Pyramid Principle. Use for explicit pyramid, SCQA, or MECE requests.
 ---
 
 Report using the Pyramid Principle. Answer top-down, not narration bottom-up.
@@ -40,7 +40,7 @@ or creative brainstorming.
 
 ## Self-check before sending
 
-- Does the first sentence contain the actual answer? If not, rewrite.
-- Remove any group that overlaps another (not ME) or any missing angle (not CE).
-- Can each point answer "why should I believe this?" If not, add the supporting level or cut the point.
-
+- Does the first sentence state the answer or recommendation?
+- Does each group use one horizontal relation: parallel or sequential?
+- Are groups MECE, with no overlap or material gap?
+- Does every point answer "why?" with evidence, reasoning, or a supporting level?

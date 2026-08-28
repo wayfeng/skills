@@ -1,148 +1,43 @@
 # Extract Workflow
 
-Turn one source into a directional Q-A chain.
+## 1. Get the Source
 
-## Step 1: Get the Source
+Fetch URLs, read local files, and use supplied text directly. Capture the core claim, its support, examples, and boundaries.
 
-Choose by input type:
+**Complete when:** the source evidence needed to answer every question is available.
 
-| Input | Tool | Notes |
-|------|------|------|
-| URL (web page) | WebFetch | Use markdown-proxy if login is required |
-| arXiv link | WebFetch (HTML) | Capture abstract + method + experiment sections |
-| PDF / local file | Read | For large PDFs, read by page chunks |
-| Raw text | Skip | Go straight to Step 2 |
-| Paper/book title | WebSearch | Find URL first, then WebFetch |
+## 2. Find the Argument Skeleton
 
-Make sure you capture: core claim, argument chain, key examples, and boundary discussion.
+Write the core claim in one sentence and its 3-5 critical reasoning turns. Re-read the source until the chain is supported.
 
-## Step 2: Find the Argument Skeleton
+**Complete when:** each turn supports or qualifies the claim.
 
-After reading, pause briefly and answer:
+## 3. Design the Chain
 
-> What is the central claim? How is it supported? Which turns are critical?
+Draft questions from the critical turns, ordered by reasoning dependency. Apply [QuestionDesign.md](QuestionDesign.md).
 
-Write:
+**Complete when:** the draft has 5-10 questions that cover the argument without paraphrasing it.
 
-- *Core claim*: one sentence
-- *3-5 key turns*: one sentence each
+## 4. Write Answers
 
-This is the spine of your Q chain. If it is weak, re-read before continuing.
+Write each answer using the four-part structure in [QuestionDesign.md](QuestionDesign.md).
 
-## Step 3: Design the Q Chain
+**Complete when:** every answer is grounded in the source and closes with a real boundary.
 
-Each key turn should generate one or more questions. Every question must:
+## 5. Check Direction
 
-1. Resist one-line definition answers
-2. Be answerable from the source
-3. Inherit from the previous question (Q2 should emerge after Q1)
+Read the questions in order. Reorder or merge parallel questions until each one creates the need for the next.
 
-Question types (Action / Contrast / Causality / Boundary) are defined in `QuestionDesign.md`.
-A good chain mixes at least three types.
+**Complete when:** removing a key question weakens a later one.
 
-*Ordering rule*: order by dependency in reasoning, not chapter order.
+## 6. Redline
 
-*Count*: 5-10 questions. Fewer is thin; more is tiring.
+Run the self-check in [QuestionDesign.md](QuestionDesign.md) and revise every failed item.
 
-## Step 4: Write Answers
+**Complete when:** every self-check item passes.
 
-Each answer must have exactly four parts:
+## 7. Write the File
 
-```text
-*Conclusion*: one sentence, standalone
+Write `qa/{YYYYMMDD}-{topic}.md`, with a 5-10 word, punctuation-free English topic. Include frontmatter (`title`, `subtitle`, `date`, `tags`, `identifier`, `source`), a 3-5 sentence `Hook`, `Q1...Qn`, and a one-sentence `Closure`. Report the full path.
 
-*Formalization*: one visual relation line with words + simple symbols
-
-*Reasoning Steps*:
-- Step 1 (single inference)
-- Step 2
-- Step 3
-
-*Boundary*: when the conclusion does not hold
-```
-
-Hard requirements:
-
-- *Conclusion*: should still work if copied out of context
-- *Formalization*: use words + simple symbols (`->`, `=`, `!=`, `+`, `x`, etc.); show relation at a glance
-- *Reasoning Steps*: one inference per bullet; each step opens the next
-- *Boundary*: state failure conditions, not "future work"
-
-### Formalization Patterns
-
-Common patterns:
-
-- *Equation*: `generalist = coordinator; specialist = executor`
-- *Contrast*: `old: model = full-stack -> new: model = coordinator`
-- *Flow*: `data -> tokens -> answer = loss + waste`
-- *Progression*: `call -> interface -> bilingual hotline`
-
-Use one line only. Keep it simple and readable.
-
-## Step 5: Check Chain Direction
-
-Read questions in order:
-
-- *Inheritance*: does Q2 naturally follow from Q1?
-- *Dependency*: if Q3 is removed, does Q4 still stand?
-
-If questions are parallel and independent, reorder or merge.
-
-Optional scratch graph (do not include in final markdown file):
-
-```text
-Q1 --+--> Q2
-    +--> Q3
-Q2 ----> Q4
-Q4 ----> Q5 (closing turn)
-```
-
-## Step 6: Redline Checklist
-
-Check line by line:
-
-- [ ] Every Q resists one-line definition answers
-- [ ] Every A has all four parts
-- [ ] Formalization line is immediately legible
-- [ ] Q chain has direction, not a flat list
-- [ ] No "What is X" questions
-- [ ] Each Q <= 20 words
-- [ ] No academic filler tone
-- [ ] No jargon-only answers; terms are grounded in concrete actions/objects
-- [ ] Total question count is 5-10
-
-If any item fails, revise.
-
-## Step 7: Write the File
-
-Get timestamp:
-
-```bash
-date +%Y%m%dT%H%M%S
-```
-
-Denote filename schema: `{YYYYMMDD}-{topic}.md`
-
-- Topic is a 5-10 word core claim phrase in English without punctuation
-
-Output path: `$(pwd)/qa`
-
-After writing, report the full path to the user.
-
-## File Shape
-
-Write a markdown file with this structure:
-
-- Frontmatter: `title`, `subtitle`, `date`, `tags`, `identifier`, `source`
-- `Hook` section (3-5 sentences: what this source argues and why it is worth questioning)
-- `Q1...Qn` sections (`n` in 5-10)
-- In each Q section: `Conclusion`, `Formalization`, `Reasoning Steps`, `Boundary`
-- `Closure` section (one sentence naming the source's true contribution)
-
-## Acceptance
-
-- *Questions cut to the core*: no definition-only questions
-- *Answers close formally*: all four parts present; relation line is clear
-- *Chain has direction*: remove one key Q and later steps should weaken
-- *Not paraphrase*: rebuild argument skeleton, do not rewrite paragraphs
-- *Natural English*: short, direct, concrete language
+**Complete when:** the Markdown file has the required shape and passes the self-check.
